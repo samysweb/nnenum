@@ -38,6 +38,8 @@ class Settings(metaclass=FreezableMeta):
 
         cls.RESULT_SAVE_STARS = False # save LpStar objects in result?
 
+        cls.RESULT_SAVE_COUNTER_STARS = False # save LpStar objects in result if counter-example found?
+
         cls.RESULT_SAVE_TIMERS = [] # list of timers to record in Result.timers; TIMING_STATS must be True
 
         cls.FIND_CONCRETE_COUNTEREXAMPLES = True # should we try to find concrete counterexamples if spec violated?
@@ -102,6 +104,7 @@ class Settings(metaclass=FreezableMeta):
         cls.GLPK_TIMEOUT = 60 # maximum allowed seconds for each indivudal LP run
         cls.GLPK_FIRST_PRIMAL = True # first try primal LP... if that fails do dual
         cls.GLPK_RESET_BEFORE_MINIMIZE = False # reset the lp basis before minimize
+        cls.GLPK_THRESHOLD = 1e-10 # threshold for primal and dual feasibility
 
         cls.SKIP_COMPRESSED_CHECK = False # sanity check for compressed inputs when COMPRESS_INIT_BOX is False
         ####

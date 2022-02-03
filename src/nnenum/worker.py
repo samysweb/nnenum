@@ -781,7 +781,8 @@ class Worker(Freezable):
         self.add_branch_str(f"concrete {'UNSAFE' if violation_star is not None else 'safe'}")
 
         # do this last as it will serialize the star's lpi if multithreaded
-        if Settings.RESULT_SAVE_STARS:
+        if Settings.RESULT_SAVE_STARS or (Settings.RESULT_SAVE_COUNTER_STARS and concrete_io_tuple is not None):
+            print("saving star")
             self.save_star(self.priv.ss)
 
         self.priv.ss = None

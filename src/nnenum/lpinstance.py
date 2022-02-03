@@ -28,6 +28,8 @@ def get_lp_params(alternate_lp_params=False):
         #params.msg_lev = glpk.GLP_MSG_ERR
         params.msg_lev = glpk.GLP_MSG_ERR
         params.meth = glpk.GLP_PRIMAL if Settings.GLPK_FIRST_PRIMAL else glpk.GLP_DUAL
+        params.tol_bnd=Settings.GLPK_THRESHOLD
+        params.tol_dj=Settings.GLPK_THRESHOLD
 
         params.tm_lim = int(Settings.GLPK_TIMEOUT * 1000)
         params.out_dly = 2 * 1000 # start printing to terminal delay

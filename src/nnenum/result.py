@@ -44,7 +44,7 @@ class Result(Freezable):
             ###### assigned if Settings.RESULT_SAVE_POLYS = True. Each entry is polygon (list of 2-d points), ######
             self.polys = Result.manager.list()
 
-            ###### assigned if Settings.RESULT_SAVE_STARS = True. Each entry is an LpStar ######
+            ###### assigned if Settings.RESULT_SAVE_STARS = True or Settings.RESULT_SAVE_COUNTER_STARS = True and Counterexample found. Each entry is an LpStar ######
             self.stars = Result.manager.list()
 
             ###### below are assigned used if spec is not None and property is unsafe ######
