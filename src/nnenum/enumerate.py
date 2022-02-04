@@ -125,6 +125,8 @@ def enumerate_network(init, network, spec=None):
 
         rv.cinput = concrete_io_tuple[0]
         rv.coutput = concrete_io_tuple[1]
+        if Settings.RESULT_SAVE_STARS or (Settings.RESULT_SAVE_COUNTER_STARS and concrete_io_tuple is not None):
+            rv.stars.append(init_ss.star)
     elif init_ss is None or time.perf_counter() - start > Settings.TIMEOUT:
         if Settings.PRINT_OUTPUT:
             print(f"Timeout before enumerate, init_ss is None: {init_ss is None}")
@@ -228,6 +230,7 @@ def process_result(shared):
             stars = shared.finished_stars.value
             approx = shared.finished_approx_stars.value
             print(f"\nTotal Stars: {stars} ({stars - approx} exact, {approx} approx)")
+            print(f"Unfinished Stars: {shared.unfinished_stars.value}")
             
             suffix = "" if shared.result.total_secs < 60 else f" ({round(shared.result.total_secs, 2)} sec)"
             print(f"Runtime: {to_time_str(shared.result.total_secs)}{suffix}")

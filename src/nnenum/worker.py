@@ -255,6 +255,9 @@ class Worker(Freezable):
                 if Settings.RESULT_SAVE_POLYS:
                     self.save_poly(ss)
 
+                if Settings.RESULT_SAVE_COUNTER_STARS and concrete_io_tuple is not None:
+                    self.save_star(ss)
+
                 self.priv.ss = None
                 self.priv.finished_approx_stars += 1
 
@@ -511,7 +514,7 @@ class Worker(Freezable):
 
         rv = self.shared.stars_in_progress.value == 0
 
-        if not rv:
+        if not rv and not Settings.RESULT_SAVE_COUNTER_STARS:
             rv = self.shared.result.found_confirmed_counterexample.value == 1
 
         if not rv and self.shared.had_exception.value == 1:
@@ -728,7 +731,8 @@ class Worker(Freezable):
 
             if concrete_io_tuple is not None:
                 self.shared.result.found_confirmed_counterexample.value = 1
-                self.shared.should_exit.value = True
+                if not Settings.RESULT_SAVE_COUNTER_STARS:
+                    self.shared.should_exit.value = True
 
                 for i, val in enumerate(concrete_io_tuple[0]):
                     self.shared.result.cinput[i] = val
@@ -782,7 +786,6 @@ class Worker(Freezable):
 
         # do this last as it will serialize the star's lpi if multithreaded
         if Settings.RESULT_SAVE_STARS or (Settings.RESULT_SAVE_COUNTER_STARS and concrete_io_tuple is not None):
-            print("saving star")
             self.save_star(self.priv.ss)
 
         self.priv.ss = None
