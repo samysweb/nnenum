@@ -190,7 +190,7 @@ class Zonotope(Freezable):
 
         return rv
 
-    def minimize_val(self, vector):
+    def minimize_val(self, vector, added_vector=None):
         '''get the minimum value of the zonotope projected onto the passed-in direction
 
         similar to zonotope.maximize but slightly faster
@@ -203,6 +203,8 @@ class Zonotope(Freezable):
         # project vector (a generator) onto row, to check if it's positive or negative
         #res_vec = np.dot(self.mat_t.transpose(), vector) # slow? since we're taking transpose
         res_vec = np.dot(vector, self.mat_t)
+        if added_vector is not None:
+            res_vec[:added_vector.shape[0]] += added_vector
 
         #Timers.tic('loop')
         #for res, ib in zip(res_vec, self.init_bounds):

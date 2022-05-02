@@ -213,7 +213,7 @@ def test_abstract_violation(dims, vstars, vindices, network, spec):
         for row in rows:
             # this one is almost free since objective direction is None
             cinput, coutput = vstar.minimize_vec(None, return_io=True)
-            assert cur_spec.is_violation(coutput, tol_rhs=1e-4)
+            assert cur_spec.is_violation(cinput, coutput, tol_rhs=1e-4)
 
             trimmed_input = cinput[:dims]
             
@@ -221,7 +221,7 @@ def test_abstract_violation(dims, vstars, vindices, network, spec):
             exec_output = network.execute(full_input)
             flat_output = np.ravel(exec_output)
 
-            if cur_spec.is_violation(flat_output):
+            if cur_spec.is_violation(cinput[:dims], flat_output):
                 if Settings.PRINT_OUTPUT:
                     print("Found unsafe from first concrete execution of abstract counterexample")
 
@@ -230,7 +230,7 @@ def test_abstract_violation(dims, vstars, vindices, network, spec):
 
             # this one is worst violation, use row as objective function
             cinput, coutput = vstar.minimize_vec(row, return_io=True)
-            assert cur_spec.is_violation(coutput, tol_rhs=1e-4)
+            assert cur_spec.is_violation(cinput, coutput, tol_rhs=1e-4)
             
             abstract_ios.append((cinput, coutput))
 
@@ -239,7 +239,7 @@ def test_abstract_violation(dims, vstars, vindices, network, spec):
             exec_output = network.execute(full_input)
             flat_output = np.ravel(exec_output)
 
-            if cur_spec.is_violation(flat_output):
+            if cur_spec.is_violation(cinput[:dims], flat_output):
                 if Settings.PRINT_OUTPUT:
                     print("Found unsafe from second concrete execution of abstract counterexample")
 

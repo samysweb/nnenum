@@ -172,16 +172,15 @@ class Worker(Freezable):
                 concrete_io_tuple = None
             else:
                 sim_out = prerelu_sims[len(network.layers)]
-
-                if spec.is_violation(sim_out):
-                    sim_in_flat = ss.prefilter.simulation[0]
+                sim_in_flat = ss.prefilter.simulation[0]
+                if spec.is_violation(sim_in_flat,sim_out):
                     sim_in = ss.star.to_full_input(sim_in_flat)
 
                     # run through complete network in to out before counting it
                     sim_out = network.execute(sim_in)
                     sim_out = nn_flatten(sim_out)
 
-                    if spec.is_violation(sim_out):
+                    if spec.is_violation(sim_in_flat,sim_out):
                         concrete_io_tuple = [sim_in, sim_out]
 
                         if Settings.PRINT_OUTPUT:
@@ -256,6 +255,7 @@ class Worker(Freezable):
                     self.save_poly(ss)
 
                 if Settings.RESULT_SAVE_COUNTER_STARS and concrete_io_tuple is not None:
+                    violation_star = spec.get_violation_star(ss, concrete=concrete_io_tuple)
                     self.save_star(ss)
 
                 self.priv.ss = None
@@ -786,7 +786,8 @@ class Worker(Freezable):
 
         # do this last as it will serialize the star's lpi if multithreaded
         if Settings.RESULT_SAVE_STARS or (Settings.RESULT_SAVE_COUNTER_STARS and concrete_io_tuple is not None):
-            self.save_star(self.priv.ss)
+            assert violation_star is not None
+            self.save_star(violation_star)
 
         self.priv.ss = None
 
