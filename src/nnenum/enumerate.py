@@ -23,6 +23,8 @@ from nnenum.network import NeuralNetwork, nn_flatten
 from nnenum.worker import Worker
 from nnenum.overapprox import try_quick_overapprox
 
+from nnenum.lpinstance import UnsatError
+
 from nnenum.prefilter import LpCanceledException
 
 def make_init_ss(init, network, spec, start_time):
@@ -107,7 +109,13 @@ def enumerate_network(init, network, spec=None):
     concrete_io_tuple = None
     
     if time.perf_counter() - start < Settings.TIMEOUT:
-        init_ss = make_init_ss(init, network, spec, start) # returns None if timeout
+        try:
+            init_ss = make_init_ss(init, network, spec, start) # returns None if timeout
+        except UnsatError as e:
+            print("WARNING: star set cannot be constructed (LP is unsat)")
+            rv = Result(network, quick=True)
+            rv.result_str = 'none'
+            return rv
 
         proven_safe = False
         try_quick = Settings.TRY_QUICK_OVERAPPROX or Settings.SINGLE_SET

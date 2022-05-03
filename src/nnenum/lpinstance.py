@@ -487,6 +487,10 @@ class LpInstance(Freezable):
         assert len(vec.shape) == 1 or vec.shape[0] == 1
         assert len(vec) == self.get_num_cols(), f"vec had {len(vec)} values, but lpi has {self.get_num_cols()} cols"
 
+        if np.all(vec == 0.) or np.any(np.isnan(vec)) or np.any(np.isinf(vec)) or np.isnan(rhs) or np.isinf(rhs):
+            # Do not add (i.e. over-approximate) rows that are all zero, or that have inf or nan values
+            return
+        
         if normalize and not Settings.SKIP_CONSTRAINT_NORMALIZATION:
             norm = np.linalg.norm(vec)
             
@@ -723,8 +727,8 @@ class LpInstance(Freezable):
                 else:
                     print("Error: No-dir result was also infeasible!")
                     
-                    if self.get_num_rows() < 50 and self.get_num_cols() < 50:
-                        print(f"{self}")
+                    #if self.get_num_rows() < 50 and self.get_num_cols() < 50:
+                    #    print(f"{self}")
             else:
                 print("Using result after reset basis (soltion was now feasible)")
 

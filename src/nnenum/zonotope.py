@@ -204,7 +204,13 @@ class Zonotope(Freezable):
         #res_vec = np.dot(self.mat_t.transpose(), vector) # slow? since we're taking transpose
         res_vec = np.dot(vector, self.mat_t)
         if added_vector is not None:
+            #try:
+            #print("Added : ", added_vector)
+            #print("Before: ",res_vec)
             res_vec[:added_vector.shape[0]] += added_vector
+            #print("After: ",res_vec)
+            #except:
+            #print(f"Couldn't at {added_vector} to {res_vec}")
 
         #Timers.tic('loop')
         #for res, ib in zip(res_vec, self.init_bounds):

@@ -256,7 +256,8 @@ class Worker(Freezable):
 
                 if Settings.RESULT_SAVE_COUNTER_STARS and concrete_io_tuple is not None:
                     violation_star = spec.get_violation_star(ss, concrete=concrete_io_tuple)
-                    self.save_star(ss)
+                    violation_star.counter_example = concrete_io_tuple
+                    self.save_star(violation_star)
 
                 self.priv.ss = None
                 self.priv.finished_approx_stars += 1
@@ -628,14 +629,14 @@ class Worker(Freezable):
 
                     self.shared.put_queue(new_ss)
 
-    def save_star(self, ss):
+    def save_star(self, star):
         '''save the lp_star to the result
 
         this has the effect of serializing the current star's lpi if multithreaded
         '''
 
-        ss.star.lpi.serialize()
-        self.shared.result.stars.append(ss.star)
+        star.lpi.serialize()
+        self.shared.result.stars.append(star)
 
     def save_poly(self, ss):
         'save the polygon verts for the current, finished star into result.polys'
@@ -787,6 +788,7 @@ class Worker(Freezable):
         # do this last as it will serialize the star's lpi if multithreaded
         if Settings.RESULT_SAVE_STARS or (Settings.RESULT_SAVE_COUNTER_STARS and concrete_io_tuple is not None):
             assert violation_star is not None
+            violation_star.counter_example = concrete_io_tuple
             self.save_star(violation_star)
 
         self.priv.ss = None

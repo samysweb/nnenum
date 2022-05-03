@@ -68,6 +68,8 @@ class LpStar(Freezable):
             else:
                 self.init_bias = self.bias.copy()
 
+        self.counter_example = None
+
         self.freeze_attrs()
 
     def __str__(self):

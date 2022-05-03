@@ -255,7 +255,7 @@ class Specification(Freezable):
 
         return rv if is_violation else None
 
-class MixedSpecification(Specification)
+class MixedSpecification(Specification):
 
     def __init__(self, mat, rhs, input_size):
         super().__init__(mat, rhs)
@@ -264,8 +264,6 @@ class MixedSpecification(Specification)
     
     def get_num_expected_variables(self):
         return super().get_num_expected_variables()-self.input_size
-    
-
     
     def is_violation(self, input, state, tol_rhs=0.0):
         'does this concrete state violate the specification?'
@@ -359,10 +357,13 @@ class MixedSpecification(Specification)
             rhs_list.append(rhs)
             lpi.add_dense_row(row, rhs, normalize=normalize)
 
+        #print("Checking violation star:")
+        #print(lpi)
         winput = lpi.minimize(None, fail_on_unsat=False)
 
         if winput is None:
             # when we check all the specification directions at the same time, there is no violaton
+            #print("UNSAT")
             is_violation = False
         else:
             is_violation = True
