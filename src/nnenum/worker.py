@@ -255,9 +255,8 @@ class Worker(Freezable):
                     self.save_poly(ss)
 
                 if Settings.RESULT_SAVE_COUNTER_STARS and concrete_io_tuple is not None:
-                    violation_star = spec.get_violation_star(ss, concrete=concrete_io_tuple)
-                    violation_star.counter_example = concrete_io_tuple
-                    self.save_star(violation_star)
+                    ss.star.counter_example = concrete_io_tuple
+                    self.save_star(ss.star)
 
                 self.priv.ss = None
                 self.priv.finished_approx_stars += 1
@@ -788,8 +787,8 @@ class Worker(Freezable):
         # do this last as it will serialize the star's lpi if multithreaded
         if Settings.RESULT_SAVE_STARS or (Settings.RESULT_SAVE_COUNTER_STARS and concrete_io_tuple is not None):
             assert violation_star is not None
-            violation_star.counter_example = concrete_io_tuple
-            self.save_star(violation_star)
+            ss.star.counter_example = concrete_io_tuple
+            self.save_star(ss.star)
 
         self.priv.ss = None
 
