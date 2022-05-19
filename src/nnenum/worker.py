@@ -254,22 +254,27 @@ class Worker(Freezable):
                 if Settings.RESULT_SAVE_POLYS:
                     self.save_poly(ss)
 
+                end_search=True
                 if Settings.RESULT_SAVE_COUNTER_STARS and concrete_io_tuple is not None:
-                    ss.star.counter_example = concrete_io_tuple
-                    self.save_star(ss.star)
+                    #if ss.star.a_mat.shape[1] == self.shared.network.get_num_inputs():
+                    #    ss.star.counter_example = concrete_io_tuple
+                    #    self.save_star(ss.star)
+                    #else:
+                    end_search=False
+                
+                if end_search:
+                    self.priv.ss = None
+                    self.priv.finished_approx_stars += 1
 
-                self.priv.ss = None
-                self.priv.finished_approx_stars += 1
-
-                # local stats that get updated in update_shared_variables
-                self.priv.update_stars += 1
-                self.priv.update_work_frac += ss.work_frac
-                self.priv.update_stars_in_progress -= 1
-                    
-                if not self.priv.work_list:
-                    # urgently update shared variables to try to get more work
-                    self.priv.shared_update_urgent = True
-                    self.priv.fulfillment_requested_time = time.perf_counter()
+                    # local stats that get updated in update_shared_variables
+                    self.priv.update_stars += 1
+                    self.priv.update_work_frac += ss.work_frac
+                    self.priv.update_stars_in_progress -= 1
+                        
+                    if not self.priv.work_list:
+                        # urgently update shared variables to try to get more work
+                        self.priv.shared_update_urgent = True
+                        self.priv.fulfillment_requested_time = time.perf_counter()
 
         return is_safe
         

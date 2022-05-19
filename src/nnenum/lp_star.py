@@ -466,7 +466,7 @@ class LpStar(Freezable):
 
         return [i, o]
 
-    def minimize_vec(self, vec, return_io=False, fail_on_unsat=True):
+    def minimize_vec(self, vec, mixed=0, return_io=False, fail_on_unsat=True):
         '''optimize over this set
 
         vec is the vector of outputs we're optimizing over, None means use zero vector
@@ -489,14 +489,19 @@ class LpStar(Freezable):
 
             if vec is None:
                 vec = np.zeros((self.a_mat.shape[0],), dtype=dtype)
+            if mixed > 0:
+                assert len(vec) == (self.a_mat.shape[0] + mixed)
+                assert isinstance(vec, np.ndarray)
+                lp_vec = np.dot(self.a_mat.T, vec[mixed:])
+                lp_vec[:mixed] = vec[:mixed]
+            else:
+                assert len(vec) == self.a_mat.shape[0], f"minimize called with vector with {len(vec)} elements, " + \
+                    f"but set has {self.a_mat.shape[0]} outputs"
 
-            assert len(vec) == self.a_mat.shape[0], f"minimize called with vector with {len(vec)} elements, " + \
-                f"but set has {self.a_mat.shape[0]} outputs"
+                #Timers.tic('setup')
+                assert isinstance(vec, np.ndarray)
 
-            #Timers.tic('setup')
-            assert isinstance(vec, np.ndarray)
-
-            lp_vec = np.dot(self.a_mat.T, vec)
+                lp_vec = np.dot(self.a_mat.T, vec)
             #lp_vec = vec.T.dot(self.a_mat).T
 
             num_init_vars = self.a_mat.shape[1]

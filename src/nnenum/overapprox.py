@@ -9,7 +9,7 @@ from nnenum.settings import Settings
 from nnenum.timerutil import Timers
 from nnenum.util import Freezable
 from nnenum.prefilter import update_bounds_lp, sort_splits
-from nnenum.specification import DisjunctiveSpec
+from nnenum.specification import DisjunctiveSpec, MixedSpecification
 from nnenum.network import ReluLayer, FullyConnectedLayer, nn_flatten, nn_unflatten
 
 def try_quick_overapprox(ss, network, spec, start_time):
@@ -196,6 +196,10 @@ def test_abstract_violation(dims, vstars, vindices, network, spec):
             cur_spec = spec.spec_list[vindex]
         else:
             cur_spec = spec
+        if isinstance(cur_spec, MixedSpecification):
+            mixed = cur_spec.input_size
+        else:
+            mixed = 0
 
         # try all rows
         # rows = cur_spec.mat
@@ -229,7 +233,7 @@ def test_abstract_violation(dims, vstars, vindices, network, spec):
                 break
 
             # this one is worst violation, use row as objective function
-            cinput, coutput = vstar.minimize_vec(row, return_io=True)
+            cinput, coutput = vstar.minimize_vec(row, mixed=mixed, return_io=True)
             assert cur_spec.is_violation(cinput, coutput, tol_rhs=1e-4)
             
             abstract_ios.append((cinput, coutput))

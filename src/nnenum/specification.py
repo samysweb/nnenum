@@ -270,7 +270,7 @@ class MixedSpecification(Specification):
 
         # (Input coefficients + transformed output coefficients)*x <= rhs
         res = np.dot(self.mat[:,self.input_size:], state)
-        res[:self.input_size] += np.dot(self.mat[:,:self.input_size],input[:self.input_size])
+        res += np.dot(self.mat[:,:self.input_size],input[:self.input_size])
 
         rv = True
 
@@ -288,7 +288,7 @@ class MixedSpecification(Specification):
 
         # (Input coefficients + transformed output coefficients)*x <= rhs
         res = np.dot(self.mat[:,self.input_size:], state)
-        res[:self.input_size] += np.dot(self.mat[:,:self.input_size],input[:self.input_size])
+        res += np.dot(self.mat[:,:self.input_size],input[:self.input_size])
         rv = -np.inf
 
         for got, ub in zip(res, self.rhs):
