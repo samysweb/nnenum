@@ -231,7 +231,7 @@ def process_result(shared):
                                     shared.unfinished_stars.value,
                                     shared.finished_work_frac.value)
 
-    if Settings.PRINT_OUTPUT:
+    if Settings.PRINT_PROGRESS:
         if shared.had_exception.value == 1:
             print("Exception occured during execution")
         else:
