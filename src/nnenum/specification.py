@@ -265,17 +265,18 @@ class MixedSpecification(Specification):
     def get_num_expected_variables(self):
         return super().get_num_expected_variables()-self.input_size
     
-    def is_violation(self, input, state, tol_rhs=0.0):
+    def is_violation(self, input, state, tol_rhs=1e-1, printIfNot=False):
         'does this concrete state violate the specification?'
 
         # (Input coefficients + transformed output coefficients)*x <= rhs
-        res = np.dot(self.mat[:,self.input_size:], state)
-        res += np.dot(self.mat[:,:self.input_size],input[:self.input_size])
+        res = np.dot(self.mat, np.hstack([input,state]))
 
         rv = True
 
         for got, ub in zip(res, self.rhs):
             if got > ub + tol_rhs:
+                if printIfNot:
+                    print(f"{got} > {ub} + {tol_rhs}")
                 rv = False
                 break
 
@@ -345,21 +346,20 @@ class MixedSpecification(Specification):
 
         init_spec = np.dot(self.mat[:,self.input_size:], copy.a_mat)
         init_spec[:,:self.input_size] += self.mat[:,:self.input_size]
-        lpi = copy.lpi
 
         init_bias = np.dot(self.mat[:,self.input_size:], copy.bias)
         hs_list = []
         rhs_list = []
 
         for i, row in enumerate(init_spec):
-            rhs = self.rhs[i] - init_bias[i]
+            rhs = self.rhs[i] - init_bias[i]+1e-4
             hs_list.append(row)
             rhs_list.append(rhs)
-            lpi.add_dense_row(row, rhs, normalize=normalize)
+            copy.lpi.add_dense_row(row, rhs, normalize=normalize)
 
         #print("Checking violation star:")
         #print(lpi)
-        winput = lpi.minimize(None, fail_on_unsat=False)
+        winput = copy.lpi.minimize(None, fail_on_unsat=False)
 
         if winput is None:
             # when we check all the specification directions at the same time, there is no violaton
@@ -368,7 +368,7 @@ class MixedSpecification(Specification):
         else:
             is_violation = True
             rv = copy
-            #woutput = np.dot(copy.a_mat, winput) + copy.bias
+            woutput = np.dot(copy.a_mat, winput) + copy.bias
             #assert self.is_violation(woutput), f"witness output {woutput} was not a violation of {self}"
 
             # also comput input box bounds

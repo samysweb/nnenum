@@ -583,10 +583,11 @@ def worker_func(worker_index, shared):
                 print("")
                 Timers.print_stats()
                 print("")
-    except:
-        if Settings.PRINT_OUTPUT:
-            print("\n")
-            traceback.print_exc()
+    except Exception as e:
+        print("\n")
+        print(type(e))
+        print(e)
+        traceback.print_exc()
 
         shared.mutex.acquire()
         shared.had_exception.value = True
@@ -594,6 +595,7 @@ def worker_func(worker_index, shared):
         shared.mutex.release()
 
         print(f"\nWorker {worker_index} had exception") 
+        
         w.clear_remaining_work()
 
         # dump branch tuples

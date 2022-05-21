@@ -489,11 +489,12 @@ class LpStar(Freezable):
 
             if vec is None:
                 vec = np.zeros((self.a_mat.shape[0],), dtype=dtype)
+
             if mixed > 0:
                 assert len(vec) == (self.a_mat.shape[0] + mixed)
                 assert isinstance(vec, np.ndarray)
                 lp_vec = np.dot(self.a_mat.T, vec[mixed:])
-                lp_vec[:mixed] = vec[:mixed]
+                lp_vec[:mixed] += vec[:mixed]
             else:
                 assert len(vec) == self.a_mat.shape[0], f"minimize called with vector with {len(vec)} elements, " + \
                     f"but set has {self.a_mat.shape[0]} outputs"
