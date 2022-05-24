@@ -42,7 +42,8 @@ class Worker(Freezable):
         while not should_exit:
             # check if finished
             if self.priv.ss and self.priv.ss.is_finished(self.shared.network):
-                self.finished_star() # this sets self.priv.ss to None
+                for star in self.finished_star(): # this sets self.priv.ss to None
+                    yield star
 
                 if self.priv.work_list and Settings.BRANCH_MODE in [Settings.BRANCH_EGO, Settings.BRANCH_EGO_LIGHT]:
                     self.priv.work_list[-1].should_try_overapprox = True
@@ -643,8 +644,11 @@ class Worker(Freezable):
         this has the effect of serializing the current star's lpi if multithreaded
         '''
 
-        star.lpi.serialize()
-        self.shared.result.stars.append(star)
+        if Settings.ITERATE_COUNTEREXAMPLES:
+            yield star
+        else:
+            star.lpi.serialize()
+            self.shared.result.stars.append(star)
 
     def save_poly(self, ss):
         'save the polygon verts for the current, finished star into result.polys'
@@ -797,7 +801,8 @@ class Worker(Freezable):
         if Settings.RESULT_SAVE_STARS or (Settings.RESULT_SAVE_COUNTER_STARS and concrete_io_tuple is not None):
             assert violation_star is not None
             ss.star.counter_example = concrete_io_tuple
-            self.save_star(ss.star)
+            for star in self.save_star(ss.star):
+                yield star
 
         self.priv.ss = None
 

@@ -115,7 +115,9 @@ def enumerate_network(init, network, spec=None):
             print("WARNING: star set cannot be constructed (LP is unsat)")
             rv = Result(network, quick=True)
             rv.result_str = 'none'
-            return rv
+            if not Settings.ITERATE_COUNTEREXAMPLES:
+                yield rv
+            return
 
         proven_safe = False
         try_quick = Settings.TRY_QUICK_OVERAPPROX or Settings.SINGLE_SET
@@ -167,7 +169,8 @@ def enumerate_network(init, network, spec=None):
                     if Settings.PRINT_OUTPUT:
                         print("Running single-threaded")
 
-                    worker_func(0, shared)
+                    for star in worker_func(0, shared):
+                        yield star
                 else:
                     processes = []
 
@@ -200,7 +203,9 @@ def enumerate_network(init, network, spec=None):
     if Settings.TIMING_STATS and Settings.PRINT_OUTPUT and rv.result_str != 'error':
         Timers.print_stats()
 
-    return rv
+    if not Settings.ITERATE_COUNTEREXAMPLES:
+        yield rv
+    return
 
 def process_result(shared):
     'process a verification result'
@@ -494,7 +499,8 @@ def worker_func(worker_index, shared):
     w = Worker(shared, priv)
 
     try:
-        w.main_loop()
+        for star in w.main_loop():
+            yield star
 
         if worker_index == 0 and Settings.PRINT_OUTPUT:
             print("\n")

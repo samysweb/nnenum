@@ -39,6 +39,7 @@ class Settings(metaclass=FreezableMeta):
         cls.RESULT_SAVE_STARS = False # save LpStar objects in result?
 
         cls.RESULT_SAVE_COUNTER_STARS = False # save LpStar objects in result if counter-example found?
+        cls.ITERATE_COUNTEREXAMPLES = False # Only relevant if RESULT_SAVE_COUNTER_STARS is True; Will not save counter-examples but iterate over them.
 
         cls.RESULT_SAVE_TIMERS = [] # list of timers to record in Result.timers; TIMING_STATS must be True
 
