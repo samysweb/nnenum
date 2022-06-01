@@ -74,11 +74,7 @@ class FakeQueue(Freezable):
         'get an item from the queue'
 
         if self.d:
-            self.i=(self.i+1)%2
-            if self.i==0:
-                return self.d.popleft()
-            else:
-                return self.d.pop()
+            rv = self.d.popleft()
         else:
             raise queue.Empty()
 

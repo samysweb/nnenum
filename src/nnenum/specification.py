@@ -265,7 +265,7 @@ class MixedSpecification(Specification):
     def get_num_expected_variables(self):
         return super().get_num_expected_variables()-self.input_size
     
-    def is_violation(self, input, state, tol_rhs=1e-1, printIfNot=False):
+    def is_violation(self, input, state, tol_rhs=1e-3, printIfNot=False):
         'does this concrete state violate the specification?'
 
         # (Input coefficients + transformed output coefficients)*x <= rhs
