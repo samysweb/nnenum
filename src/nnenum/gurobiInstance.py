@@ -15,6 +15,7 @@ class LpInstance:
             self.lp = other_lpi.lp.copy()
 
         self.lp.setParam('TimeLimit', Settings.GLPK_TIMEOUT)
+        self.lp.setParam('OutputFlag', 0)
 
     def __del__(self):
         if hasattr(self, 'lp') and self.lp is not None:
