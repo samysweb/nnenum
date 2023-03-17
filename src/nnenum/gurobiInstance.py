@@ -87,10 +87,24 @@ class LpInstance:
         return types
 
     def add_positive_cols(self, names):
-        raise NotImplementedError()
+        num_vars = len(names)
+
+        if num_vars > 0:
+            num_cols = self.get_num_cols()
+
+            self.names += names
+            for name in names
+                self.lp.AddVar(0.0,grb.INFINITY,name=name)
 
     def add_cols(self, names):
-        raise NotImplementedError()
+        num_vars = len(names)
+
+        if num_vars > 0:
+            num_cols = self.get_num_cols()
+
+            self.names += names
+            for name in names
+                self.lp.AddVar(-grb.INFINITY,grb.INFINITY,name=name)
 
     def add_double_bounded_cols(self, names, lb, ub):
         '''add variables to the model with common lower and upper bound'''
