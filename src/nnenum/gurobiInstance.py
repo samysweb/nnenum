@@ -16,6 +16,7 @@ class LpInstance:
 
         self.lp.setParam('TimeLimit', Settings.GLPK_TIMEOUT)
         self.lp.setParam('OutputFlag', 0)
+        self.lp.setParam('FeasibilityTol', 1e-9)
 
     def __del__(self):
         if hasattr(self, 'lp') and self.lp is not None:
@@ -92,9 +93,10 @@ class LpInstance:
         if num_vars > 0:
             num_cols = self.get_num_cols()
 
-            self.names += names
-            for name in names
-                self.lp.AddVar(0.0,grb.INFINITY,name=name)
+            #self.names += names
+            for name in names:
+                self.lp.addVar(0.0,np.inf,name=name)
+            self.lp.update()
 
     def add_cols(self, names):
         num_vars = len(names)
@@ -102,9 +104,10 @@ class LpInstance:
         if num_vars > 0:
             num_cols = self.get_num_cols()
 
-            self.names += names
-            for name in names
-                self.lp.AddVar(-grb.INFINITY,grb.INFINITY,name=name)
+            #self.names += names
+            for name in names:
+                self.lp.addVar(-np.inf,np.inf,name=name)
+            self.lp.update()
 
     def add_double_bounded_cols(self, names, lb, ub):
         '''add variables to the model with common lower and upper bound'''
@@ -130,6 +133,8 @@ class LpInstance:
         # model.addMContr() requires Matrix as input
         lhs = np.expand_dims(vec, axis=0)
         rhs = np.array([rhs])
+
+        #self.lp.addMConstr(lhs, self.lp.getVars()[:lhs.shape[1]], '<=', rhs)
         self.lp.addMConstr(lhs, self.lp.getVars(), '<=', rhs)
 
         # TODO: could be removed, when it is ensured that optimize() is called next
