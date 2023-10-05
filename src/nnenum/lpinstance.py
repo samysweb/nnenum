@@ -26,7 +26,7 @@ def get_lp_params(alternate_lp_params=False):
         glpk.glp_init_smcp(params)
 
         #params.msg_lev = glpk.GLP_MSG_ERR
-        params.msg_lev = glpk.GLP_MSG_ERR
+        params.msg_lev = glpk.GLP_MSG_OFF
         params.meth = glpk.GLP_PRIMAL if Settings.GLPK_FIRST_PRIMAL else glpk.GLP_DUAL
         params.tol_bnd=Settings.GLPK_THRESHOLD
         params.tol_dj=Settings.GLPK_THRESHOLD
@@ -40,7 +40,7 @@ def get_lp_params(alternate_lp_params=False):
         params2 = glpk.glp_smcp()
         glpk.glp_init_smcp(params2)
         params2.meth = glpk.GLP_DUAL if Settings.GLPK_FIRST_PRIMAL else glpk.GLP_PRIMAL
-        params2.msg_lev = glpk.GLP_MSG_ON
+        params2.msg_lev = glpk.GLP_MSG_OFF
 
         params2.tm_lim = int(Settings.GLPK_TIMEOUT * 1000)
         params2.out_dly = 1 * 1000 # start printing to terminal status after 1 secs
